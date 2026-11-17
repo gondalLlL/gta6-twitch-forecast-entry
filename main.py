@@ -105,12 +105,16 @@ def forecast_case(case: dict) -> dict:
         
     pool_data = []
     for comp in pool:
+        c_day_start = comp.get("day_start")
+        if not c_day_start:
+            continue
+        cdt_start = parse_iso(c_day_start)
         hourly_map = {}
         for pt in comp.get("hourly", []):
             hourly_map[pt.get("from")] = pt.get("viewers", 0)
         comp_h = {}
         for h in range(1, 25):
-            expected_from = format_iso(dt_start + timedelta(hours=h-1))
+            expected_from = format_iso(cdt_start + timedelta(hours=h-1))
             if expected_from in hourly_map and hourly_map[expected_from] > 0:
                 comp_h[h] = hourly_map[expected_from]
         if 1 in comp_h:
